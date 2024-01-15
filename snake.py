@@ -15,11 +15,14 @@ width, height = 720 // grid_size, 480 // grid_size
 player_position = [0, 0]
 
 player_body = [ [0, 0], 
+                [20,0],
             ]
 
 rect_size = 20
 
 food_position = [random.randint(0, width - 1) * grid_size, random.randint(0, height - 1) * grid_size]
+
+current_direction = (0, 0)
 
 while running:
 
@@ -41,17 +44,38 @@ while running:
         pygame.draw.rect(screen, (0, 255, 0), (segment[0], segment[1], rect_size, rect_size))
 
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_w] and player_position[1] - grid_size >= 0:
-        player_position[1] -= grid_size
-    elif keys[pygame.K_s] and player_position[1] + grid_size < 480:
-        player_position[1] += grid_size
-    elif keys[pygame.K_a] and player_position[0] - grid_size >= 0:
-        player_position[0] -= grid_size
-    elif keys[pygame.K_d] and player_position[0] + grid_size < 720:
-        player_position[0] += grid_size
+
+    if keys[pygame.K_w]:
+        current_direction = (0, -1)
+    elif keys[pygame.K_s]:
+        current_direction = (0, 1)
+    elif keys[pygame.K_a]:
+        current_direction = (-1, 0)
+    elif keys[pygame.K_d]:
+        current_direction = (1, 0)
+
+    player_position[0] += current_direction[0] * grid_size
+    player_position[1] += current_direction[1] * grid_size
+
+    if player_position[0] < 0:
+        player_position[0] = 0
+        current_direction = (0, 1)
+    elif player_position[0] >= 720 - grid_size:
+        player_position[0] = 720 - grid_size
+        current_direction = (0, 1)
+
+    if player_position[1] < 0:
+        player_position[1] = 0
+        current_direction = (1, 0)
+    elif player_position[1] >= 480 - grid_size:
+        player_position[1] = 480 - grid_size
+        current_direction = (1, 0)
 
     player_body[0][0] = player_position[0]
     player_body[0][1] = player_position[1]
+
+    # Check for collision with body
+    
 
     # Rendering grid lines
     for x in range(0, 720, grid_size):
